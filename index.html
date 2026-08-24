@@ -163,6 +163,23 @@
   .howto{background:var(--surface-2); border:1px dashed var(--line); border-radius:10px; padding:12px 14px; font-size:12.5px; color:var(--ink-muted); line-height:1.5; margin-top:6px;}
   .howto b{color:var(--ink);}
   .toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom,0px) + 90px); transform:translateX(-50%); background:var(--ink); color:var(--bg); font-size:13px; font-weight:600; padding:11px 18px; border-radius:99px; z-index:80; box-shadow:var(--shadow); max-width:88%; text-align:center;}
+
+  .qr-empty{font-size:12.5px; color:var(--ink-muted); padding:8px 0;}
+  .qr-print-header{display:none;}
+  .qr-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:14px; margin-top:12px;}
+  .qr-cell{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .qr-frame{background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px; width:100%;}
+  .qr-frame svg{display:block; width:100%; height:auto;}
+  .qr-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-muted);}
+  @media print{
+    body *{visibility:hidden;}
+    #qr-print-area, #qr-print-area *{visibility:visible;}
+    #qr-print-area{position:absolute; top:0; left:0; width:100%; background:#fff; padding:24px;}
+    .qr-print-header{display:block; font-family:'Work Sans',sans-serif; font-size:13px; color:#000; margin-bottom:16px;}
+    .qr-frame{border-color:#ccc;}
+    .qr-label{color:#000;}
+    .scan-fab, .topbar, #export-top, .export-top{display:none !important;}
+  }
 </style>
 </head>
 <body>
@@ -277,10 +294,2325 @@
       <button class="btn btn-secondary" id="import-backup-btn">Restore from backup (.json)</button>
       <input type="file" id="import-file-input" accept="application/json" class="hidden">
     </div>
+    <div class="export-card">
+      <h3>Barcode library (print &amp; QR)</h3>
+      <div class="export-sub">A physical copy of every barcode you've taught the app, as printable QR codes. If your phone is ever lost or wiped, scan these back in with <b>Scan bottle</b> on any phone running this app — no file, no internet, no account needed.</div>
+      <button class="export-btn" style="width:100%; margin-bottom:8px;" id="qr-generate-btn">Generate QR backup</button>
+      <button class="btn btn-secondary hidden" id="qr-print-btn">Print backup sheet</button>
+      <div id="qr-backup-output"></div>
+    </div>
   </div>
 </div>
 
 <script id="catalog-data" type="application/json">[{"code":"BRBT-0001","product":"Boags Preminum Lager","type":"B","category":"BEER / CIDER STUBBIES","gRow":7,"gPrev":121,"wRow":7,"wPrev":22},{"code":"BRBT-0002","product":"Boags Preminum Light","type":"B","category":"BEER / CIDER STUBBIES","gRow":8,"gPrev":78,"wRow":8,"wPrev":13},{"code":"BRBT-0003","product":"Boags St George","type":"B","category":"BEER / CIDER STUBBIES","gRow":9,"gPrev":506,"wRow":9,"wPrev":0},{"code":"BRBT-0004","product":"Peroni Nastro Azzurro","type":"B","category":"BEER / CIDER STUBBIES","gRow":10,"gPrev":8,"wRow":10,"wPrev":13},{"code":"BRBT-0005","product":"Great Northen","type":"B","category":"BEER / CIDER STUBBIES","gRow":11,"gPrev":135,"wRow":11,"wPrev":13},{"code":"BRBT-0006","product":"Corona","type":"B","category":"BEER / CIDER STUBBIES","gRow":12,"gPrev":132,"wRow":12,"wPrev":17},{"code":"NABR-0001","product":"Carlton 0%","type":"B","category":"BEER / CIDER STUBBIES","gRow":13,"gPrev":68,"wRow":13,"wPrev":8},{"code":"NABR-0002","product":"Heaps Normal","type":"B","category":"BEER / CIDER STUBBIES","gRow":14,"gPrev":121,"wRow":14,"wPrev":8},{"code":"BRBT-0007","product":"Du Cane Pale Ale","type":"B","category":"BEER / CIDER STUBBIES","gRow":15,"gPrev":78,"wRow":15,"wPrev":8},{"code":"BRBT-0008","product":"Du Cane IPA","type":"B","category":"BEER / CIDER STUBBIES","gRow":16,"gPrev":64,"wRow":16,"wPrev":8},{"code":"BRBT-0009","product":"Little Rivers Small Sour","type":"B","category":"BEER / CIDER STUBBIES","gRow":17,"gPrev":31,"wRow":17,"wPrev":8},{"code":"BRBT-0010","product":"Spreyton Hard Ginger Beer","type":"B","category":"BEER / CIDER STUBBIES","gRow":18,"gPrev":67,"wRow":18,"wPrev":6},{"code":"NABR-0003","product":"Spreyton 0% Ginger beer","type":"B","category":"BEER / CIDER STUBBIES","gRow":19,"gPrev":48,"wRow":19,"wPrev":8},{"code":"CDBT-0001","product":"Spreyton Pear Cider","type":"B","category":"BEER / CIDER STUBBIES","gRow":20,"gPrev":48,"wRow":20,"wPrev":11},{"code":"CDBT-0002","product":"Spreyton Apple Cider","type":"B","category":"BEER / CIDER STUBBIES","gRow":21,"gPrev":35,"wRow":21,"wPrev":9},{"code":"NACD-0001","product":"Willie Smith non-alcoholic cider 0%","type":"B","category":"BEER / CIDER STUBBIES","gRow":22,"gPrev":71,"wRow":22,"wPrev":8},{"code":"BRCN-0001","product":"Albert Pilsner Can","type":"B","category":"BEER / CIDER STUBBIES","gRow":23,"gPrev":10,"wRow":25,"wPrev":0},{"code":"BRCN-0002","product":"Albert Dark Lager Can","type":"B","category":"BEER / CIDER STUBBIES","gRow":24,"gPrev":6,"wRow":23,"wPrev":0},{"code":"BRCN-0003","product":"Albert Pale Ale Can","type":"B","category":"BEER / CIDER STUBBIES","gRow":25,"gPrev":3,"wRow":24,"wPrev":0},{"code":"BRKG-0001","product":"Island State King Penguin Pale ale","type":"B","category":"BEER / CIDER KEGS","gRow":27,"gPrev":1.2,"wRow":27,"wPrev":0},{"code":"BRKG-0002","product":"Island State Lager","type":"B","category":"BEER / CIDER KEGS","gRow":28,"gPrev":4.8,"wRow":28,"wPrev":0},{"code":"BRKG-0003","product":"Bruny island stout","type":"B","category":"BEER / CIDER KEGS","gRow":29,"gPrev":1.7,"wRow":29,"wPrev":0},{"code":"BRKG-0004","product":"little rivers summer haze","type":"B","category":"BEER / CIDER KEGS","gRow":30,"gPrev":1.7,"wRow":30,"wPrev":0},{"code":"BRKG-0005","product":"Albert Pilsner","type":"B","category":"BEER / CIDER KEGS","gRow":31,"gPrev":2.4,"wRow":31,"wPrev":0},{"code":"SPBR-0001","product":"Hine Rare Cognac","type":"PS","category":"GRAPE SPIRITS","gRow":33,"gPrev":0.9,"wRow":33,"wPrev":0.4},{"code":"SPBR-0002","product":"Delord Bas Armagnac XO 700ml","type":"PS","category":"GRAPE SPIRITS","gRow":34,"gPrev":0,"wRow":34,"wPrev":0.9},{"code":"SPBR-0003","product":"Paul Giraud Cognac Vieille Reserve 25yo","type":"PS","category":"GRAPE SPIRITS","gRow":35,"gPrev":0.8,"wRow":35,"wPrev":1},{"code":"SPBR-0004","product":"St Remy VSOP","type":"PS","category":"GRAPE SPIRITS","gRow":36,"gPrev":2.4,"wRow":36,"wPrev":1},{"code":"SPGR-0001","product":"BarSol Quebranta Pisco","type":"PS","category":"GRAPE SPIRITS","gRow":37,"gPrev":0,"wRow":37,"wPrev":0.4},{"code":"SPGR-0002","product":"Francoli grappa Moscato","type":"PS","category":"GRAPE SPIRITS","gRow":38,"gPrev":0.9,"wRow":38,"wPrev":0},{"code":"SPGR-0003","product":"Francoli grappa Limousin","type":"PS","category":"GRAPE SPIRITS","gRow":39,"gPrev":0.4,"wRow":39,"wPrev":0.9},{"code":"WFVM-0001","product":"Dolin dry vermouth","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":41,"gPrev":5.3,"wRow":41,"wPrev":2.1},{"code":"WFVM-0002","product":"Cinzaro Vermouth Rosso 1L","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":42,"gPrev":6.6,"wRow":42,"wPrev":1.4},{"code":"WFPT-0001","product":"McWilliam\u0027s Tawny 10 Years Port","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":43,"gPrev":2.7,"wRow":43,"wPrev":1},{"code":"WFPT-0002","product":"Nieport Porto","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":44,"gPrev":2.2,"wRow":44,"wPrev":0.8},{"code":"WFPT-0003","product":"Frogmore Creek Ruby Pinot port","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":45,"gPrev":10.7,"wRow":45,"wPrev":1},{"code":"WFPT-0004","product":"Boronia all\u0027uovo","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":46,"gPrev":0,"wRow":46,"wPrev":1},{"code":"WFSH-0001","product":"Don Zoilo Pedro Ximenez Sherry","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":47,"gPrev":6.7,"wRow":47,"wPrev":1},{"code":"WFSH-0002","product":"Don Zoilo Fino Sherry","type":"PS","category":"VERMOUTH \u0026 FORTIFIED","gRow":48,"gPrev":0,"wRow":48,"wPrev":1},{"code":"BIBI-0001","product":"Angostura 200ml","type":"S","category":"BITTERS","gRow":50,"gPrev":15.4,"wRow":50,"wPrev":2.1},{"code":"BIBI-0002","product":"Pechaud Bitter","type":"S","category":"BITTERS","gRow":51,"gPrev":0,"wRow":51,"wPrev":1},{"code":"BIBI-0003","product":"Regans Orange Bitter","type":"S","category":"BITTERS","gRow":52,"gPrev":9.9,"wRow":52,"wPrev":0},{"code":"BIBI-0004","product":"Bittermans Xocolatl Bitter","type":"S","category":"BITTERS","gRow":53,"gPrev":0,"wRow":53,"wPrev":0},{"code":"BIBI-0005","product":"Sammy Piqant","type":"S","category":"BITTERS","gRow":54,"gPrev":6.6,"wRow":54,"wPrev":0},{"code":"BIBI-0006","product":"Aromatic bitter","type":"S","category":"BITTERS","gRow":55,"gPrev":11,"wRow":55,"wPrev":0},{"code":"BIBI-0007","product":"Wonderfoam","type":"S","category":"BITTERS","gRow":56,"gPrev":11,"wRow":56,"wPrev":2.1},{"code":"LQCR-0001","product":"Baileys","type":"L","category":"LIQUORS","gRow":58,"gPrev":2.1,"wRow":58,"wPrev":1},{"code":"LQFR-0001","product":"Blue Curacao","type":"L","category":"LIQUORS","gRow":59,"gPrev":1.1,"wRow":59,"wPrev":1.1},{"code":"LQFR-0002","product":"Clement Creole Shrub","type":"L","category":"LIQUORS","gRow":60,"gPrev":1.1,"wRow":60,"wPrev":1.1},{"code":"LQFR-0003","product":"Cointreau","type":"L","category":"LIQUORS","gRow":61,"gPrev":4.2,"wRow":61,"wPrev":2.1},{"code":"LQFR-0004","product":"Chambord","type":"L","category":"LIQUORS","gRow":62,"gPrev":1.6,"wRow":62,"wPrev":2.1},{"code":"LQFR-0005","product":"De Kuyper Apricot Brandy","type":"L","category":"LIQUORS","gRow":63,"gPrev":0,"wRow":63,"wPrev":0},{"code":"LQHB-0001","product":"De Kuyper Butterscotch Schnapps","type":"L","category":"LIQUORS","gRow":64,"gPrev":7.7,"wRow":64,"wPrev":1},{"code":"LQFR-0006","product":"De Kuyper Creme de Bananes","type":"L","category":"LIQUORS","gRow":65,"gPrev":0,"wRow":65,"wPrev":1},{"code":"LQFR-0007","product":"De Kuyper Lychee Liqueur","type":"L","category":"LIQUORS","gRow":66,"gPrev":0,"wRow":66,"wPrev":1},{"code":"LQFR-0008","product":"De Kuyper Peach Liqueur","type":"L","category":"LIQUORS","gRow":67,"gPrev":3.3,"wRow":67,"wPrev":1},{"code":"LQFR-0009","product":"De Kuyper Wild Strawberry","type":"L","category":"LIQUORS","gRow":68,"gPrev":1.1,"wRow":68,"wPrev":1.1},{"code":"LQHB-0002","product":"Disaronno","type":"L","category":"LIQUORS","gRow":69,"gPrev":4.1,"wRow":69,"wPrev":1.3},{"code":"LQHB-0003","product":"D.O.M. Benedectine","type":"L","category":"LIQUORS","gRow":70,"gPrev":1.3,"wRow":70,"wPrev":0.5},{"code":"LQHB-0004","product":"Drambuie","type":"L","category":"LIQUORS","gRow":71,"gPrev":1.4,"wRow":71,"wPrev":0.9},{"code":"LQHB-0005","product":"Frangelico","type":"L","category":"LIQUORS","gRow":72,"gPrev":4.4,"wRow":72,"wPrev":1.8},{"code":"LQHB-0006","product":"Galliano Sambucca","type":"L","category":"LIQUORS","gRow":73,"gPrev":0,"wRow":73,"wPrev":0},{"code":"LQFR-0010","product":"Grand Marnier","type":"L","category":"LIQUORS","gRow":74,"gPrev":0.2,"wRow":74,"wPrev":1},{"code":"LQCR-0002","product":"Hellyers Road Coffee Cream Liqueur","type":"L","category":"LIQUORS","gRow":75,"gPrev":1.1,"wRow":75,"wPrev":0},{"code":"LQCF-0001","product":"Kahlua 1l","type":"L","category":"LIQUORS","gRow":76,"gPrev":4.1,"wRow":76,"wPrev":1.9},{"code":"LQHB-0007","product":"LICOR 43","type":"L","category":"LIQUORS","gRow":77,"gPrev":0.9,"wRow":77,"wPrev":0.5},{"code":"LQFR-0011","product":"Maraschino Marasca","type":"L","category":"LIQUORS","gRow":78,"gPrev":0,"wRow":78,"wPrev":0.9},{"code":"LQFR-0012","product":"Marionette Mure","type":"L","category":"LIQUORS","gRow":79,"gPrev":0,"wRow":79,"wPrev":1},{"code":"LQFR-0013","product":"Marionette Casis","type":"L","category":"LIQUORS","gRow":80,"gPrev":0,"wRow":80,"wPrev":1},{"code":"LQCR-0003","product":"Massenez Crème de Cacao","type":"L","category":"LIQUORS","gRow":81,"gPrev":1.1,"wRow":81,"wPrev":1},{"code":"LQFR-0014","product":"Massenez Crème de Violette","type":"L","category":"LIQUORS","gRow":82,"gPrev":4.4,"wRow":82,"wPrev":0.5},{"code":"LQFR-0015","product":"Massenez Pomme verte","type":"L","category":"LIQUORS","gRow":83,"gPrev":5.5,"wRow":83,"wPrev":0.9},{"code":"LQFR-0016","product":"Malibu","type":"L","category":"LIQUORS","gRow":84,"gPrev":1.9,"wRow":84,"wPrev":2.1},{"code":"LQFR-0017","product":"Midori","type":"L","category":"LIQUORS","gRow":85,"gPrev":18.7,"wRow":85,"wPrev":3.1},{"code":"LQCR-0004","product":"Mozart Chock cream","type":"L","category":"LIQUORS","gRow":86,"gPrev":1.1,"wRow":86,"wPrev":1.1},{"code":"LQCF-0002","product":"Mr Black 500ml","type":"L","category":"LIQUORS","gRow":87,"gPrev":0.8,"wRow":87,"wPrev":0.6},{"code":"LQHB-0008","product":"Ouzu 12","type":"L","category":"LIQUORS","gRow":88,"gPrev":0,"wRow":88,"wPrev":0.9},{"code":"LQFR-0018","product":"Pavan","type":"L","category":"LIQUORS","gRow":89,"gPrev":0,"wRow":89,"wPrev":0.6},{"code":"LQFR-0019","product":"Passoa","type":"L","category":"LIQUORS","gRow":90,"gPrev":0,"wRow":90,"wPrev":0.9},{"code":"LQHB-0009","product":"Pimm\u0027s","type":"L","category":"LIQUORS","gRow":91,"gPrev":1.1,"wRow":91,"wPrev":0},{"code":"LQHB-0010","product":"Southern Comfort 1l","type":"L","category":"LIQUORS","gRow":92,"gPrev":0.6,"wRow":92,"wPrev":0},{"code":"LQFR-0020","product":"St. Germain","type":"L","category":"LIQUORS","gRow":93,"gPrev":3.1,"wRow":93,"wPrev":0},{"code":"LQFR-0021","product":"Fiorente","type":"L","category":"LIQUORS","gRow":94,"gPrev":1.1,"wRow":94,"wPrev":0},{"code":"LQFR-0022","product":"Villa Masssa Limoncello","type":"L","category":"LIQUORS","gRow":95,"gPrev":6.6,"wRow":95,"wPrev":2.1},{"code":"APAP-0001","product":"Aperol","type":"L","category":"APERITIF \u0026 AMARO","gRow":97,"gPrev":5.5,"wRow":97,"wPrev":2.1},{"code":"APAM-0001","product":"Braulio","type":"L","category":"APERITIF \u0026 AMARO","gRow":98,"gPrev":0,"wRow":98,"wPrev":0.9},{"code":"APAP-0002","product":"Campari","type":"L","category":"APERITIF \u0026 AMARO","gRow":99,"gPrev":5.5,"wRow":99,"wPrev":0.3},{"code":"APAP-0003","product":"Delamere ratafia","type":"L","category":"APERITIF \u0026 AMARO","gRow":100,"gPrev":19.8,"wRow":100,"wPrev":0},{"code":"APAM-0002","product":"Cynar Pezziol Tonico","type":"L","category":"APERITIF \u0026 AMARO","gRow":101,"gPrev":0.9,"wRow":101,"wPrev":0.8},{"code":"APAP-0004","product":"Gentiane de Lure Aperitif","type":"L","category":"APERITIF \u0026 AMARO","gRow":102,"gPrev":1.1,"wRow":102,"wPrev":0.9},{"code":"APAB-0001","product":"Penod Absinte","type":"L","category":"APERITIF \u0026 AMARO","gRow":103,"gPrev":0,"wRow":103,"wPrev":0},{"code":"APAP-0005","product":"Picon Biere 1Ltr","type":"L","category":"APERITIF \u0026 AMARO","gRow":104,"gPrev":0,"wRow":104,"wPrev":1},{"code":"APAM-0003","product":"Montenegro","type":"L","category":"APERITIF \u0026 AMARO","gRow":105,"gPrev":1.7,"wRow":105,"wPrev":0.5},{"code":"APAM-0004","product":"Osare Tasmania \u0027Amaro\u0027","type":"L","category":"APERITIF \u0026 AMARO","gRow":106,"gPrev":0,"wRow":106,"wPrev":0},{"code":"MXCD-0001","product":"Brickfords Lime Cordial","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":108,"gPrev":13.2,"wRow":108,"wPrev":2.1},{"code":"MXCD-0002","product":"Brickfords Raspberry Cordial","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":109,"gPrev":9.9,"wRow":109,"wPrev":2.1},{"code":"MXCD-0003","product":"Grenadine","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":110,"gPrev":3.3,"wRow":110,"wPrev":2.1},{"code":"MXGA-0001","product":"Agave Nectar","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":111,"gPrev":8.8,"wRow":111,"wPrev":2.1},{"code":"MXGA-0002","product":"Tabasco Sauce","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":112,"gPrev":0,"wRow":112,"wPrev":2},{"code":"JUJU-0001","product":"golden circle juice 1L","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":113,"gPrev":0,"wRow":113,"wPrev":17},{"code":"JUJU-0002","product":"spreyton juice 2L","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":114,"gPrev":0,"wRow":114,"wPrev":15},{"code":"JUJU-0003","product":"Cranberry Juice","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":115,"gPrev":0,"wRow":115,"wPrev":0},{"code":"JUJU-0004","product":"Tomato Juice","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":116,"gPrev":0,"wRow":116,"wPrev":0},{"code":"MXTN-0001","product":"Fevertree Indian Tonic","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":117,"gPrev":11,"wRow":117,"wPrev":6.3},{"code":"MXTN-0002","product":"Fevertree Elderflower Tonic","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":118,"gPrev":35.2,"wRow":118,"wPrev":6.3},{"code":"MXTN-0003","product":"Fevertree Mediter Tonic","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":119,"gPrev":44.2,"wRow":119,"wPrev":7.3},{"code":"MXTN-0004","product":"Tasmanian Tonic Company Liliy Pilly","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":120,"gPrev":96.8,"wRow":120,"wPrev":8.4},{"code":"MXTN-0005","product":"Tasmanian Tonic Company Pepperberry","type":"SD","category":"CORDIALS \u0026 NON ALCHOLIC","gRow":121,"gPrev":88.1,"wRow":121,"wPrev":8.4},{"code":"SDPM-0001","product":"Sprite Post Mix 15L","type":"SD","category":"POST MIX","gRow":123,"gPrev":4.4,"wRow":123,"wPrev":0},{"code":"SDPM-0002","product":"Coca Cola Post mix 15L","type":"SD","category":"POST MIX","gRow":124,"gPrev":4.4,"wRow":124,"wPrev":0},{"code":"SDPM-0003","product":"Coca Cola Zero Post mix 5L","type":"SD","category":"POST MIX","gRow":125,"gPrev":2.2,"wRow":125,"wPrev":0},{"code":"SDPM-0004","product":"Lift Post Mix 5L","type":"SD","category":"POST MIX","gRow":126,"gPrev":1.1,"wRow":126,"wPrev":0},{"code":"SDPM-0005","product":"Cascade Tonic Post Mix 5L","type":"SD","category":"POST MIX","gRow":127,"gPrev":4.4,"wRow":127,"wPrev":0},{"code":"SDPM-0006","product":"Cascade Ginger Ale Post mix 5L","type":"SD","category":"POST MIX","gRow":128,"gPrev":1.1,"wRow":128,"wPrev":0},{"code":"SPGN-0001-700ML","product":"Forty Spotted","type":"S","category":"GINS","gRow":130,"gPrev":0.8,"wRow":130,"wPrev":1},{"code":"SPGN-0001-5L","product":"Forty Spotted Gin 5L","type":"S","category":"GINS","gRow":131,"gPrev":1,"wRow":131,"wPrev":1.1},{"code":"SPGN-0002","product":"Bridport distillery forager Gin","type":"S","category":"GINS","gRow":132,"gPrev":6.7,"wRow":132,"wPrev":1.1},{"code":"SPGN-0003","product":"McHenry Dry Classic","type":"S","category":"GINS","gRow":133,"gPrev":2.8,"wRow":133,"wPrev":1.5},{"code":"SPGN-0004","product":"Dasher+Fisher Mountain Gin","type":"S","category":"GINS","gRow":134,"gPrev":0.4,"wRow":134,"wPrev":0.4},{"code":"SPGN-0005","product":"Three Cuts Founder\u0027s Release","type":"S","category":"GINS","gRow":135,"gPrev":2.6,"wRow":135,"wPrev":1.1},{"code":"SPGN-0006-500ML","product":"Three Cuts Cherry Blossom Gin 500ml","type":"S","category":"GINS","gRow":136,"gPrev":0.9,"wRow":136,"wPrev":1.8},{"code":"SPGN-0006-5L","product":"Three Cuts Cherry Blossom Gin 5L","type":"S","category":"GINS","gRow":137,"gPrev":1.1,"wRow":137,"wPrev":0.1},{"code":"SPGN-0007","product":"Lawrenny Highlands","type":"S","category":"GINS","gRow":138,"gPrev":3.8,"wRow":138,"wPrev":1.1},{"code":"SPGN-0008","product":"Strait Tasmanian Sloe Gin","type":"S","category":"GINS","gRow":139,"gPrev":1.7,"wRow":139,"wPrev":0.9},{"code":"SPGN-0009","product":"*Hendricks","type":"S","category":"GINS","gRow":140,"gPrev":1.2,"wRow":140,"wPrev":2.1},{"code":"NASP-0001","product":"*Four Pillars B/BWGN 0% gin","type":"S","category":"GINS","gRow":141,"gPrev":0.2,"wRow":141,"wPrev":1.1},{"code":"NASP-0002","product":"*Lyre 0% gin","type":"S","category":"GINS","gRow":142,"gPrev":0,"wRow":142,"wPrev":1},{"code":"NASP-0003","product":"*Gordon 0%","type":"S","category":"GINS","gRow":143,"gPrev":0,"wRow":143,"wPrev":0.1},{"code":"SPRM-0001-700ML","product":"Bridport Distillery spiced rum","type":"S","category":"SUGAR CANE SPIRITS","gRow":145,"gPrev":5,"wRow":145,"wPrev":2.1},{"code":"SPRM-0001-5L","product":"Bridport Distillery spiced rum 5L","type":"S","category":"SUGAR CANE SPIRITS","gRow":146,"gPrev":0,"wRow":146,"wPrev":0.1},{"code":"SPRM-0002","product":"New Norfolk Distillery Dormant Star Single","type":"S","category":"SUGAR CANE SPIRITS","gRow":147,"gPrev":0.8,"wRow":147,"wPrev":0.2},{"code":"SPRM-0003","product":"Deviant Distillery Wild Pure Rum","type":"S","category":"SUGAR CANE SPIRITS","gRow":148,"gPrev":1.1,"wRow":148,"wPrev":1.1},{"code":"SPRM-0004","product":"Bundarberg 1l","type":"S","category":"SUGAR CANE SPIRITS","gRow":149,"gPrev":7.1,"wRow":149,"wPrev":1.9},{"code":"SPRM-0005","product":"Bacardi Blanco","type":"S","category":"SUGAR CANE SPIRITS","gRow":150,"gPrev":3.1,"wRow":150,"wPrev":1.9},{"code":"SPRM-0006","product":"Diplomatico \"Exclusiva\"","type":"S","category":"SUGAR CANE SPIRITS","gRow":151,"gPrev":3.9,"wRow":151,"wPrev":0.8},{"code":"SPRM-0007","product":"Matusalem 23","type":"S","category":"SUGAR CANE SPIRITS","gRow":152,"gPrev":0,"wRow":152,"wPrev":0.1},{"code":"SPRM-0008","product":"Matusalem Insolito Rum","type":"S","category":"SUGAR CANE SPIRITS","gRow":153,"gPrev":2.2,"wRow":153,"wPrev":0},{"code":"SPRM-0009","product":"*Appelton Estate Rare Blend 12yo","type":"S","category":"SUGAR CANE SPIRITS","gRow":154,"gPrev":0,"wRow":154,"wPrev":0.1},{"code":"SPRM-0010","product":"*Germana Cachaca Caetano\u0027s","type":"S","category":"SUGAR CANE SPIRITS","gRow":155,"gPrev":1.1,"wRow":155,"wPrev":0.9},{"code":"SPTQ-0001","product":"Espolon Reposado","type":"S","category":"AGAVE SPIRITS","gRow":157,"gPrev":7,"wRow":157,"wPrev":1.6},{"code":"SPTQ-0002","product":"Espolon Blanco","type":"S","category":"AGAVE SPIRITS","gRow":158,"gPrev":6.1,"wRow":158,"wPrev":1},{"code":"SPTQ-0003","product":"Calle 23 Blanco Tequila","type":"S","category":"AGAVE SPIRITS","gRow":159,"gPrev":0,"wRow":159,"wPrev":0.3},{"code":"SPMZ-0001","product":"Ilegal mezcal Anejo","type":"S","category":"AGAVE SPIRITS","gRow":160,"gPrev":0,"wRow":160,"wPrev":0.3},{"code":"SPMZ-0002","product":"Ilegal mezcal Joven","type":"S","category":"AGAVE SPIRITS","gRow":161,"gPrev":0,"wRow":161,"wPrev":0.6},{"code":"SPMZ-0003","product":"Del Maguey San Luis Del Rio","type":"S","category":"AGAVE SPIRITS","gRow":162,"gPrev":0,"wRow":162,"wPrev":1},{"code":"SPTQ-0004","product":"Nodo Tequilana Coconut","type":"S","category":"AGAVE SPIRITS","gRow":163,"gPrev":0,"wRow":163,"wPrev":0.5},{"code":"SPTQ-0005","product":"Arette Fuerte Artesanal Blanco Tequila","type":"S","category":"AGAVE SPIRITS","gRow":164,"gPrev":0,"wRow":164,"wPrev":0.8},{"code":"SPVK-0001","product":"7k Vodka","type":"S","category":"VODKA","gRow":166,"gPrev":0,"wRow":166,"wPrev":1.1},{"code":"SPVK-0002","product":"Absolut Citron","type":"S","category":"VODKA","gRow":167,"gPrev":3.8,"wRow":167,"wPrev":0.9},{"code":"SPVK-0003-700ML","product":"Western Tiers","type":"S","category":"VODKA","gRow":168,"gPrev":0.5,"wRow":168,"wPrev":1},{"code":"SPVK-0003-5L","product":"Western Tiers Vodka 5L","type":"S","category":"VODKA","gRow":169,"gPrev":0,"wRow":169,"wPrev":1},{"code":"SPVK-0004","product":"Adams lemon Myrtle","type":"S","category":"VODKA","gRow":170,"gPrev":4.7,"wRow":170,"wPrev":1.5},{"code":"SPVK-0005","product":"Grey Goose","type":"S","category":"VODKA","gRow":171,"gPrev":3.9,"wRow":171,"wPrev":2.2},{"code":"SPVK-0006","product":"Sheep Whey Vodka","type":"S","category":"VODKA","gRow":172,"gPrev":0,"wRow":172,"wPrev":0.6},{"code":"SPVK-0007","product":"Cape Grim Butter","type":"S","category":"VODKA","gRow":173,"gPrev":0,"wRow":173,"wPrev":0.6},{"code":"SPVK-0008","product":"Three Cuts Vodka","type":"S","category":"VODKA","gRow":174,"gPrev":3.5,"wRow":174,"wPrev":1.5},{"code":"SPVK-0009","product":"*Barley Vodka","type":"S","category":"VODKA","gRow":175,"gPrev":0,"wRow":175,"wPrev":0},{"code":"SPWA-0001","product":"Jack Daniels Gentleman Jack","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":177,"gPrev":0.3,"wRow":177,"wPrev":0.8},{"code":"SPWA-0002","product":"Woodford Reserve Bourbon","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":178,"gPrev":3.9,"wRow":178,"wPrev":0.9},{"code":"SPWA-0003","product":"Makers Mark","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":179,"gPrev":2.2,"wRow":179,"wPrev":1},{"code":"SPWA-0004","product":"Buffalo Trace","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":180,"gPrev":2,"wRow":180,"wPrev":1.9},{"code":"SPWA-0005","product":"Willet Family Rye 4YO","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":181,"gPrev":0,"wRow":181,"wPrev":0.7},{"code":"SPWA-0006","product":"Michters US 1 Rye","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":182,"gPrev":0.5,"wRow":182,"wPrev":0.5},{"code":"SPWA-0007","product":"Bulleit Rye Bourbon","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":183,"gPrev":0,"wRow":183,"wPrev":0},{"code":"SPWA-0008","product":"Bulleit Bourbon","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":184,"gPrev":0,"wRow":184,"wPrev":0},{"code":"SPWA-0009","product":"Jim Beam White lable","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":185,"gPrev":5.5,"wRow":185,"wPrev":1.9},{"code":"SPWA-0010","product":"Canadian Club","type":"S","category":"USA,CANADIAN,IRISH WHISKY","gRow":186,"gPrev":3.3,"wRow":186,"wPrev":1.6},{"code":"SPWS-0001","product":"Chivas Regal 12yo","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":188,"gPrev":3.9,"wRow":188,"wPrev":0.41},{"code":"SPWS-0002","product":"Johnnie Walker \"Black\"","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":189,"gPrev":5.5,"wRow":189,"wPrev":0.6},{"code":"SPWS-0003","product":"Laphroig 10YO","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":190,"gPrev":3.3,"wRow":190,"wPrev":1.5},{"code":"SPWS-0004","product":"Glenfiddich 12yo","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":191,"gPrev":1.2,"wRow":191,"wPrev":1.4},{"code":"SPWS-0005","product":"Glenfiddich Solera 15YO","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":192,"gPrev":1.8,"wRow":192,"wPrev":0.5},{"code":"SPWS-0006","product":"Dalwhinnie Malt 15YO","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":193,"gPrev":1.1,"wRow":193,"wPrev":1.1},{"code":"SPWI-0001","product":"Jameson","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":194,"gPrev":0.4,"wRow":194,"wPrev":1.6},{"code":"SPWI-0002","product":"Writers Tears Potstill Whiskey","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":195,"gPrev":0,"wRow":195,"wPrev":1.1},{"code":"SPWT-0001","product":"Adams Signature Release","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":196,"gPrev":0.9,"wRow":196,"wPrev":0.3},{"code":"SPWT-0002","product":"Overeem \"Sherry Cask\"","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":197,"gPrev":1.6,"wRow":197,"wPrev":1.5},{"code":"SPWT-0003","product":"Lark Simphony N1","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":198,"gPrev":3.6,"wRow":198,"wPrev":0.2},{"code":"SPWT-0004","product":"Dark Lark","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":199,"gPrev":0,"wRow":199,"wPrev":1},{"code":"SPWT-0005","product":"Waubs Harbour Founder\u0027s Reserve","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":200,"gPrev":0.2,"wRow":200,"wPrev":0},{"code":"SPWT-0006","product":"Waubs Harbour Maritime Sherry 52%","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":201,"gPrev":0,"wRow":201,"wPrev":0.4},{"code":"SPWT-0007","product":"Battery Point Distellery Shiraz Cask","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":202,"gPrev":0.8,"wRow":202,"wPrev":1.9},{"code":"SPWT-0008","product":"IronHouse Tasman Pinot Cask","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":203,"gPrev":0.2,"wRow":203,"wPrev":0},{"code":"SPWT-0009","product":"Launceston Distillery Peated","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":204,"gPrev":1.6,"wRow":204,"wPrev":0.8},{"code":"SPWT-0010","product":"Launceston Distillery Bourbon Cask St","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":205,"gPrev":1.1,"wRow":205,"wPrev":0.3},{"code":"SPWT-0011","product":"Roseavers Three Grain Whisky","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":206,"gPrev":0.6,"wRow":206,"wPrev":5.5},{"code":"SPWT-0012","product":"Roseavers Single Malt Whisky","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":207,"gPrev":1.1,"wRow":207,"wPrev":0.8},{"code":"SPWT-0013","product":"KURIO CRIMSON J TAS WHSKY","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":208,"gPrev":2.7,"wRow":208,"wPrev":1},{"code":"SPWT-0014","product":"*Corra Linn Single Malt","type":"S","category":"SCOTCH AND WORLD WHISKY","gRow":209,"gPrev":0,"wRow":209,"wPrev":0.4},{"code":"SPOT-0001","product":"HKB Hong Kong Baijiu","type":"S","category":"OTHER SPIRITS","gRow":211,"gPrev":0,"wRow":211,"wPrev":0.6},{"code":"SPOT-0002","product":"Sanyou Baijiu","type":"S","category":"OTHER SPIRITS","gRow":212,"gPrev":0,"wRow":212,"wPrev":0.5},{"code":"SPOT-0003","product":"Charles Oates Blanco 700ml","type":"S","category":"OTHER SPIRITS","gRow":213,"gPrev":0,"wRow":213,"wPrev":0.5},{"code":"CKBC-0001","product":"French Martini","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":215,"gPrev":0.2,"wRow":215,"wPrev":0},{"code":"CKBC-0002","product":"Margarita","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":216,"gPrev":0.3,"wRow":216,"wPrev":0},{"code":"CKBC-0003","product":"Cosmopolitan","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":217,"gPrev":0.2,"wRow":217,"wPrev":0},{"code":"CKBC-0004","product":"Negroni","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":218,"gPrev":0.9,"wRow":218,"wPrev":0},{"code":"CKBC-0005","product":"Cherry Sour","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":219,"gPrev":0.5,"wRow":222,"wPrev":0},{"code":"CKBC-0006","product":"Lavender Nightcap","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":220,"gPrev":0.4,"wRow":219,"wPrev":0},{"code":"CKBC-0007","product":"Pepperberry Silo","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":221,"gPrev":0.8,"wRow":221,"wPrev":0.6},{"code":"CKBC-0008","product":"The Launceston","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":222,"gPrev":0,"wRow":220,"wPrev":0.5},{"code":"CKBC-0009","product":"Espresson Martini","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":223,"gPrev":0.5,"wRow":223,"wPrev":1},{"code":"CKBC-0010","product":"Lemon meringe pie","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":224,"gPrev":0.5,"wRow":224,"wPrev":0},{"code":"CKBC-0011","product":"Velvet Cherry","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":225,"gPrev":0.5,"wRow":225,"wPrev":0.8},{"code":"CKBC-0012","product":"Western fig","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":226,"gPrev":0.9,"wRow":226,"wPrev":0.8},{"code":"CKBC-0013","product":"Basil Cucumber Collin","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":227,"gPrev":0.7,"wRow":227,"wPrev":0.6},{"code":"CKBC-0014","product":"Carajillo","type":"MC","category":"PRE_BATCHED COCKTAILS","gRow":228,"gPrev":0.9,"wRow":228,"wPrev":0.9},{"code":"WSTM-0001","product":"30th Anniversary House of Arras Ed J Carr","type":"WS","category":"SPARKLING WINE","gRow":230,"gPrev":2,"wRow":230,"wPrev":1},{"code":"WSCM-0001","product":"15  Pol Roger Champagne Blanc de Blancs/cuvee","type":"WS","category":"SPARKLING WINE","gRow":231,"gPrev":3,"wRow":231,"wPrev":1},{"code":"WSTM-0002","product":"14  Henskens Rankin D2 Blanc de Blanc","type":"WS","category":"SPARKLING WINE","gRow":232,"gPrev":0,"wRow":232,"wPrev":1},{"code":"WSTM-0003","product":"MV Clover Hill Degorgement Tardif","type":"WS","category":"SPARKLING WINE","gRow":233,"gPrev":0,"wRow":233,"wPrev":3},{"code":"WSTM-0004","product":"Westella Blanc de Noir","type":"WS","category":"SPARKLING WINE","gRow":234,"gPrev":18,"wRow":234,"wPrev":5},{"code":"WSTM-0005","product":"Hattingley Valley Sparkling Rosé","type":"WS","category":"SPARKLING WINE","gRow":235,"gPrev":0,"wRow":235,"wPrev":6},{"code":"WSTM-0006","product":"NV Kreglinger Brut Rosé","type":"WS","category":"SPARKLING WINE","gRow":236,"gPrev":29,"wRow":236,"wPrev":5},{"code":"WSTM-0007","product":"Bellebonne Vintage Cuvée","type":"WS","category":"SPARKLING WINE","gRow":237,"gPrev":4,"wRow":237,"wPrev":6},{"code":"WSTM-0008","product":"Woodlawn Cuvee","type":"WS","category":"SPARKLING WINE","gRow":238,"gPrev":10,"wRow":238,"wPrev":6},{"code":"WSCM-0002","product":"NV  Louis Roederer Collection 244","type":"WS","category":"SPARKLING WINE","gRow":239,"gPrev":0,"wRow":239,"wPrev":3},{"code":"WSCM-0003","product":"NV  Andre Clouet Grande Reserve Champagne Brut","type":"WS","category":"SPARKLING WINE","gRow":240,"gPrev":0,"wRow":240,"wPrev":0},{"code":"WSTM-0009","product":"NV  Barringwood Methode traditionelle","type":"WS","category":"SPARKLING WINE","gRow":241,"gPrev":33,"wRow":241,"wPrev":6},{"code":"WSTM-0010","product":"The House of Arras \u0027A by Arras\u0027 Premium Cuvée","type":"WS","category":"SPARKLING WINE","gRow":242,"gPrev":21,"wRow":242,"wPrev":4},{"code":"WSOT-0001","product":"23 Pizzini Lambrusco","type":"WS","category":"SPARKLING WINE","gRow":243,"gPrev":2,"wRow":243,"wPrev":8},{"code":"WSPR-0001","product":"Bandini Prosecco","type":"WS","category":"SPARKLING WINE","gRow":244,"gPrev":12,"wRow":244,"wPrev":6},{"code":"WSTM-0011","product":"Highclare Estate Blanc de Noir","type":"WS","category":"SPARKLING WINE","gRow":245,"gPrev":86,"wRow":245,"wPrev":0},{"code":"WSTM-0012","product":"NV Kreglinger Brut","type":"WS","category":"SPARKLING WINE","gRow":246,"gPrev":19,"wRow":246,"wPrev":0},{"code":"WSTM-0013","product":"Clover Hill Tasmanian Cuvee","type":"WS","category":"SPARKLING WINE","gRow":247,"gPrev":12,"wRow":247,"wPrev":0},{"code":"WSTM-0014","product":"*Icon Sparkling","type":"WS","category":"SPARKLING WINE","gRow":248,"gPrev":0,"wRow":248,"wPrev":0},{"code":"WSPR-0002","product":"*Dal Zotto Prosecco","type":"WS","category":"SPARKLING WINE","gRow":249,"gPrev":0,"wRow":249,"wPrev":2},{"code":"WSTM-0015","product":"*18 Kreglinger Rose","type":"WS","category":"SPARKLING WINE","gRow":250,"gPrev":0,"wRow":250,"wPrev":2},{"code":"WSTM-0016","product":"Sinapius Blanc de Noir","type":"WS","category":"SPARKLING WINE","gRow":251,"gPrev":3,"wRow":251,"wPrev":0},{"code":"WWSB-0001","product":"Domaine A Lady A","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":254,"gPrev":0,"wRow":254,"wPrev":5},{"code":"WWSB-0002","product":"Anim Hairy Maclary Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":255,"gPrev":12,"wRow":255,"wPrev":5},{"code":"WWSB-0003","product":"Meadowbank Fume Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":256,"gPrev":12,"wRow":256,"wPrev":6},{"code":"WWSB-0004","product":"Bay of Fires Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":257,"gPrev":31,"wRow":257,"wPrev":5},{"code":"WWSB-0005","product":"Bream Creek Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":258,"gPrev":38,"wRow":258,"wPrev":6},{"code":"WWSB-0006","product":"Domaine Du Pre Sancerre","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":259,"gPrev":4,"wRow":259,"wPrev":6},{"code":"WWSB-0007","product":"Astrolabe Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":260,"gPrev":0,"wRow":260,"wPrev":4},{"code":"WWSB-0008","product":"Shaw+Smith Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":261,"gPrev":10,"wRow":261,"wPrev":5},{"code":"WWSB-0009","product":"Chartley Estate Sauvignon Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":262,"gPrev":0,"wRow":262,"wPrev":0},{"code":"WWSB-0010","product":"Utzinger Fume Blanc","type":"WW","category":"Sauvignon Blanc/ Semillon","gRow":263,"gPrev":10,"wRow":263,"wPrev":0},{"code":"WWCH-0001","product":"Delamere Block 3","type":"WW","category":"Chardonnay","gRow":265,"gPrev":3,"wRow":265,"wPrev":4},{"code":"WWCH-0002","product":"2015 Calcaire Derwent Estate Chardonnay","type":"WW","category":"Chardonnay","gRow":266,"gPrev":0,"wRow":266,"wPrev":6},{"code":"WWCH-0003","product":"Tolpuddle Chardonnay","type":"WW","category":"Chardonnay","gRow":267,"gPrev":0,"wRow":267,"wPrev":2},{"code":"WWCH-0004","product":"Woodlawn Three Wishes Chardonnay","type":"WW","category":"Chardonnay","gRow":268,"gPrev":20,"wRow":268,"wPrev":5},{"code":"WWCH-0005","product":"Sailor Seeks Horse Chardonnay","type":"WW","category":"Chardonnay","gRow":269,"gPrev":0,"wRow":269,"wPrev":0},{"code":"WWCH-0006","product":"Marco Lubianna Chardonnay","type":"WW","category":"Chardonnay","gRow":270,"gPrev":22,"wRow":270,"wPrev":4},{"code":"WWCH-0007","product":"Marions Vineyard Chardonnay","type":"WW","category":"Chardonnay","gRow":271,"gPrev":14,"wRow":271,"wPrev":5},{"code":"WWCH-0008-21","product":"2021 Holyman Chardonnay","type":"WW","category":"Chardonnay","gRow":272,"gPrev":7,"wRow":272,"wPrev":4},{"code":"WWCH-0008-24","product":"2024 Holyman Chardonnay","type":"WW","category":"Chardonnay","gRow":273,"gPrev":24,"wRow":273,"wPrev":0},{"code":"WWCH-0009","product":"Sinapius Close Planted Chardonnay","type":"WW","category":"Chardonnay","gRow":274,"gPrev":4,"wRow":274,"wPrev":5},{"code":"WWCH-0010","product":"Deep Valley Chardonnay","type":"WW","category":"Chardonnay","gRow":275,"gPrev":63,"wRow":275,"wPrev":1},{"code":"WWCH-0011","product":"Dalymple Pipers River Chardonnay","type":"WW","category":"Chardonnay","gRow":276,"gPrev":0,"wRow":276,"wPrev":1},{"code":"WWCH-0012","product":"Mobbile LEG Chardonnay","type":"WW","category":"Chardonnay","gRow":277,"gPrev":12,"wRow":277,"wPrev":0},{"code":"WWCH-0013","product":"Milton Reserve Chardonnay","type":"WW","category":"Chardonnay","gRow":278,"gPrev":0,"wRow":278,"wPrev":4},{"code":"WWCH-0014","product":"Leeuwin Prelude Chardonnay","type":"WW","category":"Chardonnay","gRow":279,"gPrev":10,"wRow":279,"wPrev":0},{"code":"WWCH-0015","product":"Ngeringa Biodynamic and Regenerative Chardonnay","type":"WW","category":"Chardonnay","gRow":280,"gPrev":19,"wRow":280,"wPrev":0},{"code":"WWCH-0016","product":"Utzinger Chardonnay","type":"WW","category":"Chardonnay","gRow":281,"gPrev":20,"wRow":281,"wPrev":5},{"code":"WWCH-0017","product":"Small Wonder Landscape Chardonnay","type":"WW","category":"Chardonnay","gRow":282,"gPrev":14,"wRow":282,"wPrev":6},{"code":"WWCH-0018","product":"Domaine Roux  Meursault Les Grands Charrons","type":"WW","category":"Chardonnay","gRow":283,"gPrev":0,"wRow":283,"wPrev":3},{"code":"WWCH-0019","product":"Domaine Oliver Merlin Pouilly-Fuissé","type":"WW","category":"Chardonnay","gRow":284,"gPrev":0,"wRow":284,"wPrev":11},{"code":"WWCH-0020","product":"Domaine des Hates Petit Chablis Laroche","type":"WW","category":"Chardonnay","gRow":285,"gPrev":9,"wRow":285,"wPrev":0},{"code":"WWCH-0021","product":"Beautiful Isle Chardonnay","type":"WW","category":"Chardonnay","gRow":286,"gPrev":40,"wRow":286,"wPrev":0},{"code":"WWCH-0022-15","product":"2015 Derwent Estate Chardonnay","type":"WW","category":"Chardonnay","gRow":287,"gPrev":10,"wRow":287,"wPrev":0},{"code":"WWCH-0022-21","product":"2021 Derwent Estate Chardonnay","type":"WW","category":"Chardonnay","gRow":288,"gPrev":5,"wRow":288,"wPrev":0},{"code":"WWCH-0023","product":"Nocton Chardonnay","type":"WW","category":"Chardonnay","gRow":289,"gPrev":7,"wRow":289,"wPrev":0},{"code":"WWCH-0024","product":"*Small Wonder  Portrait Chardonnay","type":"WW","category":"Chardonnay","gRow":290,"gPrev":3,"wRow":290,"wPrev":0},{"code":"WWCH-0025","product":"Two Tonne TMV Chardonnay","type":"WW","category":"Chardonnay","gRow":291,"gPrev":83,"wRow":291,"wPrev":0},{"code":"WWPG-0001","product":"Apogee Alto Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":293,"gPrev":9,"wRow":293,"wPrev":5},{"code":"WWPG-0002","product":"Haddow Dineen Grain of Truth Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":294,"gPrev":8,"wRow":294,"wPrev":4},{"code":"WWPG-0003","product":"Derwent Estate Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":295,"gPrev":15,"wRow":295,"wPrev":5},{"code":"WWPG-0004","product":"Moore\u0027s Hill Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":296,"gPrev":7,"wRow":296,"wPrev":5},{"code":"WWPG-0005","product":"Havilah Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":297,"gPrev":21,"wRow":297,"wPrev":0},{"code":"WWPG-0006","product":"Pipers Brook Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":298,"gPrev":12,"wRow":298,"wPrev":4},{"code":"WWPG-0007","product":"Norfolk Bay Pinot Grigio","type":"WW","category":"Pinot Gris/Grigio","gRow":299,"gPrev":0,"wRow":299,"wPrev":0},{"code":"WWPG-0008","product":"TreeHouse Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":300,"gPrev":56,"wRow":300,"wPrev":6},{"code":"WWPG-0009","product":"Caledon Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":301,"gPrev":12,"wRow":301,"wPrev":6},{"code":"WWPG-0010","product":"Dom.Schlumberger Pinot Gris","type":"WW","category":"Pinot Gris/Grigio","gRow":302,"gPrev":0,"wRow":302,"wPrev":3},{"code":"WWPG-0011","product":"Bremley Pinot Blanc","type":"WW","category":"Pinot Gris/Grigio","gRow":303,"gPrev":5,"wRow":303,"wPrev":4},{"code":"WWPG-0012","product":"Anim Pinot Blanc","type":"WW","category":"Pinot Gris/Grigio","gRow":304,"gPrev":15,"wRow":304,"wPrev":5},{"code":"WWPG-0013","product":"Grey Sand Blanc de Noir","type":"WW","category":"Pinot Gris/Grigio","gRow":305,"gPrev":14,"wRow":305,"wPrev":5},{"code":"WWRI-0001","product":"Kate Hill Riesling","type":"WW","category":"Riesling ","gRow":307,"gPrev":6,"wRow":307,"wPrev":1},{"code":"WWRI-0002","product":"Mobbile RAM Riesling","type":"WW","category":"Riesling ","gRow":308,"gPrev":0,"wRow":308,"wPrev":4},{"code":"WWRI-0003","product":"Meadowbank Riesling","type":"WW","category":"Riesling ","gRow":309,"gPrev":0,"wRow":309,"wPrev":0},{"code":"WWRI-0004","product":"Wellington \u0026 Wolfe Riesling","type":"WW","category":"Riesling ","gRow":310,"gPrev":0,"wRow":310,"wPrev":1},{"code":"WWRI-0005","product":"Parish Riesling","type":"WW","category":"Riesling ","gRow":311,"gPrev":16,"wRow":311,"wPrev":3},{"code":"WWRI-0006","product":"Waterton Hall Riesling","type":"WW","category":"Riesling ","gRow":312,"gPrev":5,"wRow":312,"wPrev":4},{"code":"WWRI-0007","product":"Utzinger Riesling","type":"WW","category":"Riesling ","gRow":313,"gPrev":36,"wRow":313,"wPrev":6},{"code":"WWRI-0008","product":"Huges \u0026 Huges Riesling","type":"WW","category":"Riesling ","gRow":314,"gPrev":10,"wRow":314,"wPrev":5},{"code":"WWRI-0009","product":"Dönnhoff Riesling Trocken","type":"WW","category":"Riesling ","gRow":315,"gPrev":0,"wRow":315,"wPrev":1},{"code":"WWRI-0010","product":"Mader Riesling","type":"WW","category":"Riesling ","gRow":316,"gPrev":1,"wRow":316,"wPrev":4},{"code":"WWRI-0011","product":"Chartley Estate Riesling","type":"WW","category":"Riesling ","gRow":317,"gPrev":10,"wRow":317,"wPrev":0},{"code":"WWAL-0001","product":"Stoney Rise Savagnin","type":"WW","category":"Alternate Varietals","gRow":319,"gPrev":7,"wRow":319,"wPrev":5},{"code":"WWAL-0002","product":"Sinapius Gruner Veltiner","type":"WW","category":"Alternate Varietals","gRow":320,"gPrev":12,"wRow":320,"wPrev":4},{"code":"WWAL-0003","product":"Waterton Hall Viognier","type":"WW","category":"Alternate Varietals","gRow":321,"gPrev":12,"wRow":321,"wPrev":6},{"code":"WWAL-0004","product":"Pooley Gewürztraminer","type":"WW","category":"Alternate Varietals","gRow":322,"gPrev":27,"wRow":322,"wPrev":6},{"code":"WWAL-0005","product":"Tahbilk 1927 Vines Marsanne","type":"WW","category":"Alternate Varietals","gRow":323,"gPrev":2,"wRow":323,"wPrev":4},{"code":"WWAL-0006","product":"Stargazer Tupelo","type":"WW","category":"Alternate Varietals","gRow":324,"gPrev":6,"wRow":324,"wPrev":5},{"code":"WWAL-0007","product":"Tyrrells HVD Semillon","type":"WW","category":"Alternate Varietals","gRow":325,"gPrev":6,"wRow":325,"wPrev":4},{"code":"WWAL-0008","product":"Beautiful Isle Chenin Blanc","type":"WW","category":"Alternate Varietals","gRow":326,"gPrev":9,"wRow":326,"wPrev":4},{"code":"WWAL-0009","product":"Pizzini Arneis","type":"WW","category":"Alternate Varietals","gRow":327,"gPrev":7,"wRow":327,"wPrev":4},{"code":"WWAL-0010","product":"Yangarra Piquepoul 2026","type":"WW","category":"Alternate Varietals","gRow":328,"gPrev":0,"wRow":328,"wPrev":0},{"code":"WWAM-0001","product":"Domaine Simha Paysan Chardonnay, Riesling","type":"WW","category":"Alternate Varietals","gRow":329,"gPrev":6,"wRow":329,"wPrev":5},{"code":"WWAM-0002","product":"Stoney Rise No Clothes Pinot Gris","type":"WW","category":"Alternate Varietals","gRow":330,"gPrev":6,"wRow":330,"wPrev":5},{"code":"WWAM-0003","product":"Nanny Goat Vineyard Crossbreed","type":"WW","category":"Alternate Varietals","gRow":331,"gPrev":9,"wRow":331,"wPrev":2},{"code":"RSPN-0001","product":"Mapleton Rose Rosé Pinot Noir","type":"WW","category":"Rose","gRow":333,"gPrev":2,"wRow":333,"wPrev":3},{"code":"RSBL-0001","product":"Meadowbank Rosé","type":"WW","category":"Rose","gRow":334,"gPrev":14,"wRow":334,"wPrev":3},{"code":"RSPN-0002","product":"Jones \u0026 Jones invercarron Rosé Pinot Noir","type":"WW","category":"Rose","gRow":335,"gPrev":16,"wRow":335,"wPrev":4},{"code":"RSPN-0003","product":"Evenfall Rosé Pinot Noir Shiraz","type":"WW","category":"Rose","gRow":336,"gPrev":0,"wRow":336,"wPrev":3},{"code":"RSPN-0004","product":"Springvale Rosé Pinot Noir","type":"WW","category":"Rose","gRow":337,"gPrev":21,"wRow":337,"wPrev":4},{"code":"RSBL-0002","product":"La Villa Rosé Niebbiolo","type":"WW","category":"Rose","gRow":338,"gPrev":6,"wRow":338,"wPrev":5},{"code":"RSBL-0003","product":"Domaine Royal de Jarras Pink Flamingo Rosé Gris de Gris","type":"WW","category":"Rose","gRow":339,"gPrev":0,"wRow":339,"wPrev":0},{"code":"RSBL-0004","product":"Beautiful Isle Rosé","type":"WW","category":"Rose","gRow":340,"gPrev":10,"wRow":340,"wPrev":0},{"code":"WRPN-0001","product":"22 Pooley Oronsay Pinot Noir","type":"WR","category":"Pinot Noir","gRow":343,"gPrev":1,"wRow":343,"wPrev":1},{"code":"WRPN-0002","product":"22 Dalrymple Mt Lord Pinot Noir","type":"WR","category":"Pinot Noir","gRow":344,"gPrev":15,"wRow":344,"wPrev":3},{"code":"WRPN-0003","product":"Ossa Pinot Noir","type":"WR","category":"Pinot Noir","gRow":345,"gPrev":12,"wRow":345,"wPrev":2},{"code":"WRPN-0004","product":"Tolpuddle Pinot noir","type":"WR","category":"Pinot Noir","gRow":346,"gPrev":12,"wRow":346,"wPrev":0},{"code":"WRPN-0005","product":"Apsley Gorge Pinot Noir","type":"WR","category":"Pinot Noir","gRow":347,"gPrev":4,"wRow":347,"wPrev":0},{"code":"WRPN-0006","product":"17 Grey Sand Pinot Noir","type":"WR","category":"Pinot Noir","gRow":348,"gPrev":3,"wRow":348,"wPrev":0},{"code":"WRPN-0007","product":"Ghost Rock Pinot Noir","type":"WR","category":"Pinot Noir","gRow":349,"gPrev":8,"wRow":349,"wPrev":3},{"code":"WRPN-0008-17","product":"2017 Holyman Pinot Noir","type":"WR","category":"Pinot Noir","gRow":350,"gPrev":9,"wRow":350,"wPrev":3},{"code":"WRPN-0008-20","product":"2020 Holyman Pinot Noir","type":"WR","category":"Pinot Noir","gRow":351,"gPrev":12,"wRow":351,"wPrev":0},{"code":"WRPN-0008-23","product":"2023 Holyman Pinot Noir","type":"WR","category":"Pinot Noir","gRow":352,"gPrev":12,"wRow":352,"wPrev":0},{"code":"WRPN-0009","product":"Barringwood Grazier\u0027s Pinot Noir","type":"WR","category":"Pinot Noir","gRow":353,"gPrev":21,"wRow":353,"wPrev":3},{"code":"WRPN-0010","product":"Chatto Pinot Noir","type":"WR","category":"Pinot Noir","gRow":354,"gPrev":4,"wRow":354,"wPrev":1},{"code":"WRPN-0011","product":"Westella Pinot Noir","type":"WR","category":"Pinot Noir","gRow":355,"gPrev":12,"wRow":355,"wPrev":0},{"code":"WRPN-0012","product":"Dalrymple Pinot Noir","type":"WR","category":"Pinot Noir","gRow":356,"gPrev":34,"wRow":356,"wPrev":3},{"code":"WRPN-0013","product":"Laurel Bank Pinot Noir","type":"WR","category":"Pinot Noir","gRow":357,"gPrev":12,"wRow":357,"wPrev":2},{"code":"WRPN-0014","product":"Sisu Pinot Noir","type":"WR","category":"Pinot Noir","gRow":358,"gPrev":6,"wRow":358,"wPrev":3},{"code":"WRPN-0015","product":"Evenfall Pinot Noir","type":"WR","category":"Pinot Noir","gRow":359,"gPrev":16,"wRow":359,"wPrev":0},{"code":"WRPN-0016","product":"Sonnen Pinot Noir","type":"WR","category":"Pinot Noir","gRow":360,"gPrev":14,"wRow":360,"wPrev":0},{"code":"WRPN-0017","product":"Small Wonder Landscape Pinot Noir","type":"WR","category":"Pinot Noir","gRow":361,"gPrev":8,"wRow":361,"wPrev":0},{"code":"WRPN-0018","product":"Holm Oak Protégé Pinot Noir","type":"WR","category":"Pinot Noir","gRow":362,"gPrev":63,"wRow":362,"wPrev":2},{"code":"WRPN-0019","product":"Domaine des Verchères Bourgogne","type":"WR","category":"Pinot Noir","gRow":363,"gPrev":1,"wRow":363,"wPrev":0},{"code":"WRPN-0020","product":"Stoney Rise Pinot Noir","type":"WR","category":"Pinot Noir","gRow":364,"gPrev":34,"wRow":364,"wPrev":0},{"code":"WRPN-0021","product":"Icon Pinot Noir","type":"WR","category":"Pinot Noir","gRow":365,"gPrev":20,"wRow":365,"wPrev":0},{"code":"WRPN-0022","product":"Chatto Killara Farm Pinot Noir","type":"WR","category":"Pinot Noir","gRow":366,"gPrev":0,"wRow":369,"wPrev":3},{"code":"WRPN-0023","product":"Woodlawn Pinot Noir","type":"WR","category":"Pinot Noir","gRow":367,"gPrev":7,"wRow":368,"wPrev":0},{"code":"WRPN-0024","product":"Utzinger Pinot Noir","type":"WR","category":"Pinot Noir","gRow":368,"gPrev":7,"wRow":367,"wPrev":0},{"code":"WRPN-0025","product":"Utzinger Estate Pinot Noir","type":"WR","category":"Pinot Noir","gRow":369,"gPrev":8,"wRow":366,"wPrev":0},{"code":"WRSH-0001","product":"Domaine Simha Ravi Syrah","type":"WR","category":"Shiraz","gRow":371,"gPrev":7,"wRow":371,"wPrev":3},{"code":"WRSH-0002","product":"Glaetzer-dixon Mon Père Shiraz","type":"WR","category":"Shiraz","gRow":372,"gPrev":0,"wRow":372,"wPrev":3},{"code":"WRSH-0003","product":"Henschke Keyneton Euphonium Shiraz Blend","type":"WR","category":"Shiraz","gRow":373,"gPrev":11,"wRow":373,"wPrev":0},{"code":"WRSH-0004","product":"Tscharke Estate Shiraz","type":"WR","category":"Shiraz","gRow":374,"gPrev":19,"wRow":374,"wPrev":3},{"code":"WRSH-0005","product":"Frankland Estate Isolation Ridge Syrah","type":"WR","category":"Shiraz","gRow":375,"gPrev":14,"wRow":375,"wPrev":0},{"code":"WRSH-0006","product":"Meadowbank Syrah","type":"WR","category":"Shiraz","gRow":376,"gPrev":18,"wRow":376,"wPrev":0},{"code":"WRSH-0007","product":"Riversdale Estate Syrah","type":"WR","category":"Shiraz","gRow":377,"gPrev":17,"wRow":377,"wPrev":0},{"code":"WRSH-0008","product":"Waterton Hall Shiraz","type":"WR","category":"Shiraz","gRow":378,"gPrev":4,"wRow":378,"wPrev":0},{"code":"WRSH-0009","product":"Kalleske Durif","type":"WR","category":"Shiraz","gRow":379,"gPrev":13,"wRow":379,"wPrev":0},{"code":"WRSH-0010","product":"Sons of Eden Marschall Shiraz","type":"WR","category":"Shiraz","gRow":380,"gPrev":0,"wRow":380,"wPrev":0},{"code":"WRSH-0011","product":"Schild Estate Shiraz","type":"WR","category":"Shiraz","gRow":381,"gPrev":24,"wRow":381,"wPrev":4},{"code":"WRSH-0012","product":"Chalk Hill Luna Shiraz","type":"WR","category":"Shiraz","gRow":382,"gPrev":50,"wRow":382,"wPrev":0},{"code":"WRSH-0013","product":"Ngeringa Biodynamic and Regenerative Shiraz","type":"WR","category":"Shiraz","gRow":383,"gPrev":4,"wRow":383,"wPrev":0},{"code":"WRSH-0014","product":"Utzinger Syrah","type":"WR","category":"Shiraz","gRow":384,"gPrev":0,"wRow":384,"wPrev":0},{"code":"WRCS-0001","product":"13  Domaine A A Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":386,"gPrev":5,"wRow":386,"wPrev":3},{"code":"WRCS-0002","product":"22  Evenfall Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":387,"gPrev":29,"wRow":387,"wPrev":3},{"code":"WRCS-0003","product":"16 Moorilla Muse Cabernet Sauvignon Cabernet Franc","type":"WR","category":"Cabernet Variety","gRow":388,"gPrev":10,"wRow":388,"wPrev":0},{"code":"WRCS-0004-19","product":"19  Freycinet Vineyard Cabernet Merlot","type":"WR","category":"Cabernet Variety","gRow":389,"gPrev":13,"wRow":389,"wPrev":0},{"code":"WRCS-0004-08","product":"08  Freycinet Vineyard Cabernet Merlot","type":"WR","category":"Cabernet Variety","gRow":390,"gPrev":12,"wRow":390,"wPrev":3},{"code":"WRCS-0005","product":"18  Stoney Vineyard Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":391,"gPrev":10,"wRow":391,"wPrev":3},{"code":"WRCS-0006","product":"Heartland director cut Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":392,"gPrev":5,"wRow":392,"wPrev":0},{"code":"WRCS-0007","product":"Leconfield Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":393,"gPrev":9,"wRow":393,"wPrev":0},{"code":"WRCS-0008","product":"Charles Reuben Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":394,"gPrev":11,"wRow":394,"wPrev":3},{"code":"WRCS-0009","product":"Vasse Felix Filius Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":395,"gPrev":7,"wRow":395,"wPrev":0},{"code":"WRCS-0010","product":"Kangarilla Road Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":396,"gPrev":26,"wRow":396,"wPrev":5},{"code":"WRCS-0011","product":"Silver Palm Cabernet Sauvignon","type":"WR","category":"Cabernet Variety","gRow":397,"gPrev":5,"wRow":397,"wPrev":0},{"code":"WRAL-0001","product":"Stefano Lubbiana Chicane Merlot, Malbec","type":"WR","category":"Alternate Red Varietals","gRow":399,"gPrev":14,"wRow":399,"wPrev":3},{"code":"WRAL-0002","product":"Grey Sands Malbec","type":"WR","category":"Alternate Red Varietals","gRow":400,"gPrev":10,"wRow":400,"wPrev":3},{"code":"WRAL-0003","product":"Clarence House Merlot","type":"WR","category":"Alternate Red Varietals","gRow":401,"gPrev":11,"wRow":401,"wPrev":3},{"code":"WRAL-0004","product":"Leconfield Lonicera Merlot Cabernet Franc","type":"WR","category":"Alternate Red Varietals","gRow":402,"gPrev":8,"wRow":402,"wPrev":0},{"code":"WRAL-0005","product":"Two Hands Brave Faces Grenache Shiraz Mourvedre","type":"WR","category":"Alternate Red Varietals","gRow":403,"gPrev":9,"wRow":403,"wPrev":0},{"code":"WRAL-0006","product":"Teusner Wines The Independent Shiraz Mataro","type":"WR","category":"Alternate Red Varietals","gRow":404,"gPrev":8,"wRow":404,"wPrev":0},{"code":"WRAL-0007","product":"Stargazer Rada Pinot Noir Pinot Meunier Gamay","type":"WR","category":"Alternate Red Varietals","gRow":405,"gPrev":25,"wRow":405,"wPrev":4},{"code":"WRAL-0008","product":"Sinapius Vaughn\u0027s Jardin Gamay","type":"WR","category":"Alternate Red Varietals","gRow":406,"gPrev":9,"wRow":406,"wPrev":0},{"code":"WRAL-0009","product":"Château des Jacques  Morgon","type":"WR","category":"Alternate Red Varietals","gRow":407,"gPrev":4,"wRow":407,"wPrev":0},{"code":"WRAL-0010","product":"Huges \u0026 Huges Dornfelder","type":"WW","category":"Alternate Red Varietals","gRow":408,"gPrev":22,"wRow":408,"wPrev":0},{"code":"WRAL-0011","product":"Fightling gully road Aglianlico","type":"WR","category":"Alternate Red Varietals","gRow":409,"gPrev":11,"wRow":409,"wPrev":0},{"code":"WRAL-0012","product":"Fightling gully road Grenache","type":"WR","category":"Alternate Red Varietals","gRow":410,"gPrev":12,"wRow":410,"wPrev":0},{"code":"WRAL-0013","product":"Pizzini Dolcetto","type":"WR","category":"Alternate Red Varietals","gRow":411,"gPrev":10,"wRow":411,"wPrev":0},{"code":"WRAL-0014","product":"Pizzini Sangiovese Shiraz","type":"WR","category":"Alternate Red Varietals","gRow":412,"gPrev":5,"wRow":412,"wPrev":0},{"code":"WRAL-0015","product":"Bricco Maiolica Langhe Nebbiolo","type":"WR","category":"Alternate Red Varietals","gRow":413,"gPrev":4,"wRow":413,"wPrev":0},{"code":"WRAL-0016","product":"Varvaglione PAPALE 375ml","type":"WR","category":"Alternate Red Varietals","gRow":414,"gPrev":2,"wRow":414,"wPrev":0},{"code":"WRAL-0017","product":"Havilah Gamay","type":"WR","category":"Alternate Red Varietals","gRow":415,"gPrev":14,"wRow":415,"wPrev":0},{"code":"WRAL-0018","product":"Utzinger Roter Satz Red blend","type":"WR","category":"Alternate Red Varietals","gRow":416,"gPrev":4,"wRow":416,"wPrev":0},{"code":"WDRI-0001","product":"Pressing Matters R139 Riesling 375ml","type":"WD","category":"DESSERT WINE","gRow":418,"gPrev":0,"wRow":418,"wPrev":2},{"code":"WDAL-0001","product":"Iron Pot Bay Dessert 375ml","type":"WD","category":"DESSERT WINE","gRow":419,"gPrev":4,"wRow":419,"wPrev":0},{"code":"WDRI-0002","product":"Bream Creek Late Picked Riesling Schonbuger 375ml","type":"WD","category":"DESSERT WINE","gRow":420,"gPrev":0,"wRow":420,"wPrev":0},{"code":"WDAL-0002","product":"Beautiful isle Gewürztraminer CGR","type":"WD","category":"DESSERT WINE","gRow":421,"gPrev":6,"wRow":421,"wPrev":2},{"code":"WDAL-0003","product":"Holm Oak Pig \u0026 Pooch Moscato, Muscat a petit grains","type":"WD","category":"DESSERT WINE","gRow":422,"gPrev":10,"wRow":422,"wPrev":4},{"code":"WDRI-0003","product":"\u002721  Gunderloch Riesling Auslese","type":"WD","category":"DESSERT WINE","gRow":423,"gPrev":0,"wRow":423,"wPrev":6},{"code":"NAWS-0001","product":"NV Zero Hour Non Alc Prosecco","type":"WD","category":"Non Alcoholic wine alternative","gRow":425,"gPrev":13,"wRow":425,"wPrev":3},{"code":"NAWS-0002","product":"Dr Loosen Sparkling riesling","type":"WD","category":"Non Alcoholic wine alternative","gRow":426,"gPrev":11,"wRow":426,"wPrev":0},{"code":"NAWW-0001","product":"Dr Loosen \u0027Dr Lo\u0027 riesling","type":"WD","category":"Non Alcoholic wine alternative","gRow":427,"gPrev":1,"wRow":427,"wPrev":3},{"code":"NAWR-0001","product":"NON 9 Oaked Blackberry \u0026 Plum","type":"WD","category":"Non Alcoholic wine alternative","gRow":428,"gPrev":5,"wRow":428,"wPrev":1}]</script>
+
+<!--
+  Vendored QR code encoder: qrcode-generator by Kazuhiko Arase.
+  MIT licensed — http://www.opensource.org/licenses/mit-license.php
+  https://github.com/kazuhikoarase/qrcode-generator
+  Included in full, unmodified, so barcode-library backups can be generated
+  entirely offline with no external request.
+-->
+<script>
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
 
 <script>
 (function(){
@@ -517,6 +2849,8 @@
   var scanVideo = document.getElementById('scan-video');
   var scanStatus = document.getElementById('scan-status');
   var mediaStream = null, detector = null, scanning = false, scanTimer = null;
+  var QR_BACKUP_PREFIX = 'SILOQR1:';
+  var restoreSession = null;
 
   function openScan() {
     if (!('BarcodeDetector' in window)) {
@@ -569,6 +2903,11 @@
   }
 
   function handleScanned(raw) {
+    if (typeof raw === 'string' && raw.indexOf(QR_BACKUP_PREFIX) === 0) {
+      closeScan();
+      handleBackupChunkScanned(raw);
+      return;
+    }
     closeScan();
     var code = state.barcodes[raw];
     if (code && byCode[code] && byCode[code][ROW_KEY[state.location]] != null) {
@@ -576,6 +2915,45 @@
     } else {
       openMatchSheet(raw);
     }
+  }
+
+  // A backup QR encodes one chunk as "SILOQR1:<chunkIndex>:<chunkTotal>:<barcode>:<code>/<barcode>:<code>/...".
+  // Chunks can be scanned in any order, across separate scanning sessions; once every
+  // chunk in the set has been seen, all its barcode matches are merged in at once.
+  function handleBackupChunkScanned(raw) {
+    var rest = raw.slice(QR_BACKUP_PREFIX.length);
+    var firstColon = rest.indexOf(':');
+    var secondColon = rest.indexOf(':', firstColon + 1);
+    if (firstColon < 0 || secondColon < 0) { showToast("That QR code isn't a Silo Stocktake backup chunk."); return; }
+    var idx = parseInt(rest.slice(0, firstColon), 10);
+    var total = parseInt(rest.slice(firstColon + 1, secondColon), 10);
+    var data = rest.slice(secondColon + 1);
+    if (!idx || !total || idx < 1 || idx > total) { showToast("That QR backup chunk looks corrupted."); return; }
+
+    if (!restoreSession || restoreSession.total !== total) restoreSession = { total: total, chunks: {} };
+    restoreSession.chunks[idx] = data;
+    var got = Object.keys(restoreSession.chunks).length;
+
+    if (got < total) {
+      showToast('Backup chunk ' + got + ' of ' + total + ' captured — scan the next one.');
+      openScan();
+      return;
+    }
+
+    var imported = 0;
+    for (var i = 1; i <= total; i++) {
+      var chunkData = restoreSession.chunks[i];
+      if (!chunkData) continue;
+      chunkData.split('/').forEach(function (entry) {
+        var sep = entry.indexOf(':');
+        if (sep < 1) return;
+        state.barcodes[entry.slice(0, sep)] = entry.slice(sep + 1);
+        imported++;
+      });
+    }
+    restoreSession = null;
+    persistLocal();
+    showToast('Restored ' + imported + ' barcode match' + (imported === 1 ? '' : 'es') + ' from the QR backup.');
   }
 
   document.getElementById('scan-fab').addEventListener('click', openScan);
@@ -686,6 +3064,82 @@
       showToast('Download failed: ' + (e && e.message ? e.message : 'try again'));
     }
   }
+
+  // ---------- QR barcode-library backup ----------
+  // Only characters QR "Alphanumeric" mode can encode at its higher capacity:
+  // 0-9 A-Z space $ % * + - . / :  — barcodes (digits) and internal codes
+  // (upper-case letters, digits, hyphens) both stay within it.
+  var QR_ALLOWED = /^[0-9A-Z $%*+\-.\/:]+$/;
+  var QR_CHUNK_CHARS = 450; // ~65x65 modules at EC level M — printable and reliably scannable
+
+  function buildBarcodeExportChunks() {
+    var entries = [];
+    Object.keys(state.barcodes).forEach(function (raw) {
+      var code = state.barcodes[raw];
+      if (!byCode[code]) return; // don't back up matches that point at a code no longer in the catalog
+      var entry = String(raw).toUpperCase() + ':' + code;
+      if (!QR_ALLOWED.test(entry)) return; // skip the rare barcode QR alphanumeric mode can't hold
+      entries.push(entry);
+    });
+    if (!entries.length) return [];
+    var chunks = [], cur = '';
+    entries.forEach(function (e) {
+      var candidate = cur ? cur + '/' + e : e;
+      if (cur && (QR_BACKUP_PREFIX.length + 8 + candidate.length) > QR_CHUNK_CHARS) {
+        chunks.push(cur); cur = e;
+      } else {
+        cur = candidate;
+      }
+    });
+    if (cur) chunks.push(cur);
+    var total = chunks.length;
+    return chunks.map(function (c, i) { return QR_BACKUP_PREFIX + (i + 1) + ':' + total + ':' + c; });
+  }
+
+  function renderQrSvg(text) {
+    var qr = qrcode(0, 'M');
+    qr.addData(text, 'Alphanumeric');
+    qr.make();
+    var count = qr.getModuleCount();
+    var quiet = 4, moduleSize = 4;
+    var px = (count + quiet * 2) * moduleSize;
+    var rects = [];
+    for (var r = 0; r < count; r++) {
+      for (var c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) rects.push('<rect x="' + ((c + quiet) * moduleSize) + '" y="' + ((r + quiet) * moduleSize) + '" width="' + moduleSize + '" height="' + moduleSize + '"/>');
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + px + ' ' + px + '" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><g fill="#000">' + rects.join('') + '</g></svg>';
+  }
+
+  function renderQrBackup() {
+    var output = document.getElementById('qr-backup-output');
+    var printBtn = document.getElementById('qr-print-btn');
+    var chunks;
+    try {
+      chunks = buildBarcodeExportChunks();
+    } catch (e) {
+      output.innerHTML = '<div class="qr-empty">Couldn\'t generate the QR backup: ' + escapeHtml(e.message || String(e)) + '</div>';
+      return;
+    }
+    if (!chunks.length) {
+      output.innerHTML = '<div class="qr-empty">No barcodes learned yet — scan a few products first, then come back to back them up.</div>';
+      printBtn.classList.add('hidden');
+      return;
+    }
+    var html = '<div id="qr-print-area">';
+    html += '<div class="qr-print-header">Silo Stocktake — barcode library backup — ' + escapeHtml(new Date().toLocaleDateString()) + ' — ' + chunks.length + ' code' + (chunks.length > 1 ? 's' : '') + ', scan in any order with Scan bottle</div>';
+    html += '<div class="qr-grid">';
+    chunks.forEach(function (chunkStr, i) {
+      html += '<div class="qr-cell"><div class="qr-frame">' + renderQrSvg(chunkStr) + '</div><div class="qr-label">' + (i + 1) + ' of ' + chunks.length + '</div></div>';
+    });
+    html += '</div></div>';
+    output.innerHTML = html;
+    printBtn.classList.remove('hidden');
+  }
+
+  document.getElementById('qr-generate-btn').addEventListener('click', renderQrBackup);
+  document.getElementById('qr-print-btn').addEventListener('click', function () { window.print(); });
 
   document.querySelectorAll('.export-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
